@@ -1,0 +1,7 @@
+{
+  "client_id": "",
+  "client_secret": "",
+  "redirect_uri": "http://localhost:8080/cb/",
+  "authorization_server_url": "https://accounts.fax.plus",
+  "resource_server_url": "https://restapi.fax.plus/v1"
+}

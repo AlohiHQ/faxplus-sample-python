@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Python SDK Sample App</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <style>
+        body {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        h3 {
+            margin-top: 2rem;
+        }
+
+        .row {
+            margin-bottom: 1rem;
+        }
+        /*.row .row {*/
+        /*margin-top: 1rem;*/
+        /*margin-bottom: 0;*/
+        /*}*/
+        #main-row > [class*="col-"] {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            background-color: rgba(86, 61, 124, .15);
+            border: 1px solid rgba(86, 61, 124, .2);
+        }
+
+        hr {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; width: 100%; min-height: 100px}
+        pre .string { color: green; }
+        pre .number { color: darkorange; }
+        pre .boolean { color: blue; }
+        pre .null { color: magenta; }
+        pre .key { color: red; }
+    </style>
+</head>
+
+<body>
+
+<main class="container">
+
+    <h1>Sample FAX Client Application</h1>
+    <p class="lead">This is a sample application to get you started for using fax api sdk</p>
+    {% if is_logged_in %}
+    <div class="row" id="main-row">
+        <div class="col-4">
+            <div class="list-group" id="list-tab" role="tablist">
+                <a class="list-group-item list-group-item-action active" id="list-accounts" data-toggle="list" href="#list-accounts-content" role="tab" aria-controls="home">Accounts</a>
+                <a class="list-group-item list-group-item-action" id="list-numbers" data-toggle="list" href="#list-numbers-content" role="tab" aria-controls="profile">Numbers</a>
+                <a class="list-group-item list-group-item-action" id="list-archives" data-toggle="list" href="#list-archives-content" role="tab" aria-controls="messages">Archives</a>
+                <a class="list-group-item list-group-item-action" id="list-files" data-toggle="list" href="#list-files-content" role="tab" aria-controls="settings">Files</a>
+                <a class="list-group-item list-group-item-action" id="list-outbox" data-toggle="list" href="#list-outbox-content" role="tab" aria-controls="settings">Outbox</a>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="list-accounts-content" role="tabpanel" aria-labelledby="list-accounts">
+                    <h2>Accounts</h2>
+                    <div class="row">
+                        <div class="col-sm-12">
+                        <button class="btn btn-primary btn-request" data-resource="/accounts" data-method="get" data-resource-id="all">Get All Accounts</button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="account-id" class="col-sm-2 col-form-label">User ID</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="User Id" name="resource_id" id="account-id" value="self">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="account-first-name" class="col-sm-2 col-form-label">First name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="First Name" name="first_name" id="account-first-name">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="account-last-name" class="col-sm-2 col-form-label">Last name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Last Name" name="last_name" id="account-last-name">
+                        </div>
+                    </div>
+                    <span class="text-muted">NOTE: other account fields to update are omitted for simplicity</span><br>
+                    <button class="btn btn-primary btn-request" data-resource="/accounts" data-method="get" data-resource-id="#account-id">Get Account</button>
+                    <button class="btn btn-warning btn-request" data-resource="/accounts" data-method="put"
+                            data-resource-id="#account-id" data-payload-name="#account-first-name"
+                            data-payload-last-name="#account-last-name">Update Self Account</button>
+                    <hr>
+                    <h4>Members Details (Quota and Role)</h4>
+                    <div class="form-group row">
+                        <label for="account-id" class="col-sm-2 col-form-label">Member User ID</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Member User Id" name="resource_id" id="member-id">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="member-quota" class="col-sm-2 col-form-label">Quota</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Quota" id="member-quota">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="member-quota" class="col-sm-2 col-form-label">Quota</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Role" id="member-role">                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-request" data-resource="/members" data-method="get" data-resource-id="#member-id">Get Member Details</button>
+                    <button class="btn btn-warning btn-request" data-resource="/members" data-method="put"
+                            data-resource-id="#member-id" data-payload-role="#member-role"
+                            data-payload-quota="#member-quota">Update Member</button>
+                </div>
+                <div class="tab-pane fade" id="list-numbers-content" role="tabpanel" aria-labelledby="list-numbers">
+                    <h2>Numbers</h2>
+                    <button class="btn btn-primary btn-request" data-resource="/numbers" data-method="get">Get Numbers List</button>
+                    <hr>
+                    <h4>Single Number Object</h4>
+                    <div class="form-group row">
+                        <label for="number" class="col-sm-2 col-form-label">Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Number" id="number">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="number-assigned-to" class="col-sm-2 col-form-label">Comment</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Member User ID" id="number-assigned-to">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-request" data-resource="/numbers" data-resource-id="#number" data-method="get">Get Number</button>
+                    <button class="btn btn-danger btn-request" data-resource="/numbers" data-resource-id="#number" data-method="delete">Delete</button>
+                    <button class="btn btn-warning btn-request" data-resource="/numbers" data-resource-id="#number" data-method="put" data-payload-member-id="#number-assigned-to">Update Number (Assign to member)</button>
+                </div>
+                <div class="tab-pane fade" id="list-archives-content" role="tabpanel" aria-labelledby="list-archives">
+                    <h2>Archives</h2>
+                    <button class="btn btn-primary btn-request" data-resource="/archives?category=inbox" data-method="get">Inbox</button>
+                    <button class="btn btn-primary btn-request" data-resource="/archives?category=sent" data-method="get">Sent</button>
+                    <button class="btn btn-primary btn-request" data-resource="/archives?category=spam" data-method="get">Spam</button>
+                    <hr>
+                    <h4>Single Fax Object</h4>
+                    <div class="form-group row">
+                        <label for="archive-fax-id" class="col-sm-2 col-form-label">Fax Id</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Fax ID" id="archive-fax-id">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="archive-comment" class="col-sm-2 col-form-label">Comment</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Comment" id="archive-comment">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="archive-is-read" class="col-sm-2 col-form-label">Is Read</label>
+                        <div class="col-sm-1 align-left">
+                            <input type="checkbox" class="form-control" id="archive-is-read">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-request" data-resource="/archives" data-resource-id="#archive-fax-id" data-method="get">Get Fax</button>
+                    <button class="btn btn-danger btn-request" data-resource="/archives" data-resource-id="#archive-fax-id" data-method="delete">Delete</button>
+                    <button class="btn btn-warning btn-request" data-resource="/archives" data-resource-id="#archive-fax-id" data-method="put" data-payload-comment="#archive-comment" data-payload-read="#archive-is-read">Update fax</button>
+                </div>
+                <div class="tab-pane fade" id="list-files-content" role="tabpanel" aria-labelledby="list-files">
+                    <h2>Files</h2>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="File ID" id="file_id">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary btn-request" data-resource="/files" data-resource-id="#file_id" data-method="get" data-type="file">Get File</button>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" accept="application/pdf,image/tiff" id="input-upload-file" name="fax_file">
+                        <div class="input-group-append">
+                            <button id="btn-upload-file" class="btn btn-outline-secondary btn-success btn-request" data-resource="/files" data-method="post" data-type="fax-file-upload">Upload File</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="list-outbox-content" role="tabpanel" aria-labelledby="list-outbox">
+                    <h2>Outbox</h2>
+                    <button class="btn btn-primary btn-request" data-resource="/outbox" data-method="get">Get Outbox Faxes</button>
+                    <hr>
+                    <form>
+                        <fieldset>
+                            <legend>Send Fax</legend>
+                            <div class="form-group row">
+                                <label for="fax-from" class="col-sm-2 col-form-label">From</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" placeholder="From" name="from" id="fax-from">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="fax-to" class="col-sm-2 col-form-label">To</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" placeholder="To" name="to" id="fax-to">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="fax-file" class="col-sm-2 col-form-label">Uploaded File Path</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" placeholder="e.g. /storage/transient-309bd793-52d1-47cf-969d-5cf22846607c" name="fax-file" id="fax-file">
+                                </div>
+                            </div>
+                            <button class="btn btn-success btn-request" data-resource="/outbox" data-method="post" data-type="form">Send Fax</button>
+                        </fieldset>
+                    </form>
+                    <hr>
+                    <h4>Single Outbox Object</h4>
+                    <div class="form-group row">
+                        <label for="outbox-fax-id" class="col-sm-2 col-form-label">Outbox Fax Id</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Fax ID" id="outbox-fax-id">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="fax-comment" class="col-sm-2 col-form-label">Comment</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Comment" id="fax-comment">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-request" data-resource="/outbox" data-resource-id="#outbox-fax-id" data-method="get">Get Fax</button>
+                    <button class="btn btn-danger btn-request" data-resource="/outbox" data-resource-id="#outbox-fax-id" data-method="delete">Delete</button>
+                    <button class="btn btn-warning btn-request" data-resource="/outbox" data-resource-id="#outbox-fax-id" data-method="put" data-payload-comment="#fax-comment">Update fax (set comment)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="result-container">
+        <pre id="result"></pre>
+    </div>
+    {% else %}
+    <a href='{{ login_url }}'><button class="btn btn-info">Login</button></a>
+    {% endif %}
+
+</main> <!-- /container -->
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+  var APP = APP || {};
+  APP.syntaxHighlight = function(json) {
+    if (typeof json !== 'string') {
+      json = JSON.stringify(json, undefined, 4);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(new RegExp('("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)', 'g'), function (match) {
+      var cls = 'number';
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = 'key';
+        } else {
+          cls = 'string';
+        }
+      } else if (/true|false/.test(match)) {
+        cls = 'boolean';
+      } else if (/null/.test(match)) {
+        cls = 'null';
+      }
+      return '<span class="' + cls + '">' + match + '</span>';
+    });
+  };
+  APP.prettify = function(json, injectTo){
+    injectTo = $(injectTo);
+    injectTo.html(APP.syntaxHighlight(json));
+  };
+  $('.btn-request').click(function(e){
+    e.preventDefault();
+    $('#result').html('');
+    var btn = $(this);
+    var url = btn.data('resource');
+    if(btn.data('resource-id')){
+      var resource_id = btn.data('resource-id');
+      resource_id = resource_id.indexOf('#') === 0?$(resource_id).val():resource_id;
+      resource_id = encodeURIComponent(resource_id);
+      url = url.indexOf('?')>=0?url+'&'+'resource_id='+resource_id:url+'?resource_id='+resource_id
+    }
+    var ajaxConf = {
+      'url': url,
+      'method': btn.data('method'),
+      'success': function(data){
+        APP.prettify(data, '#result');
+      }, 'error': function (jqXHR, textStatus, errorThrown) {
+        if(jqXHR.status === 401) window.location.reload();
+        else{
+          try {
+            APP.prettify(JSON.parse(jqXHR.responseText), '#result');
+          } catch (e) {
+            $('#result').html(jqXHR.responseText);
+          }
+        }
+      }
+    };
+    var payload = {};
+    var requestType = btn.data('type');
+    if(requestType === 'file'){
+      window.open(url);
+      return;
+    } else if (requestType === 'form') {
+      ajaxConf.data = btn.parents('form').serialize()
+    } else if (requestType === 'fax-file-upload'){
+      var formData = new FormData();
+      formData.append('fax_file', $('#input-upload-file')[0].files[0]);
+      ajaxConf.data = formData;
+      ajaxConf.processData = false;
+      ajaxConf.contentType = false;
+    } else {
+      var data = btn.data();
+      for(var key in data){
+        if(!data.hasOwnProperty(key)) continue;
+        if(key.indexOf('payload') === 0){
+          var value = btn.data(key);
+          var fieldName = key.replace(/^payload-?/, '').toLocaleLowerCase();
+          if(value.indexOf('#') === 0) payload[fieldName] = $(value).attr('type')==='checkbox'?$(value).is(":checked"):$(value).val();
+          else payload[fieldName] = value;
+        }
+      }
+      if(payload){
+        ajaxConf.data = payload;
+      }
+    }
+    $.ajax(ajaxConf);
+  })
+</script>
+</body>
+</html>
