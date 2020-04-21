@@ -4,7 +4,7 @@ This sample app is build to get you started using [faxplus-api](https://github.c
 
 ## Requirements.
 
-- Python 2.7 and 3.4+
+- Python 3.5+
 - A fax.plus account with activated API
 
 ## Installation & Usage

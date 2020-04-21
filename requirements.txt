@@ -1,4 +1,3 @@
-faxplus-api
-Flask==0.12.2
-requests==2.18.4
-
+faxplus-api==1.0
+Flask==1.0.2
+requests==2.22.0

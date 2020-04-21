@@ -1,28 +1,25 @@
 from __future__ import print_function
-import six
-import traceback
-from functools import wraps
+
 import base64
 import json
-import requests
 import os
 import tempfile
+import traceback
+from functools import wraps
+
+import requests
+import six
 from flask import Flask, request, Response, render_template, send_file, g
 
-from faxplus import configuration
+from faxplus import configuration, RetryOptions, PayloadOutbox, PayloadOutboxOptions, \
+    PayloadNumberModification, PayloadFaxModification, PayloadOutboxModification, PayloadAccountModification
+from faxplus.api.accounts_api import AccountsApi
 from faxplus.api.archives_api import ArchivesApi
 from faxplus.api.files_api import FilesApi
 from faxplus.api.numbers_api import NumbersApi
 from faxplus.api.outbox_api import OutboxApi
 from faxplus.api_client import ApiClient
-from faxplus.api.accounts_api import AccountsApi
-
-from faxplus.models.account import Account
 from faxplus.models.member_detail import MemberDetail
-from faxplus.models.payload_fax_modification import PayloadFaxModification
-from faxplus.models.payload_number_modification import PayloadNumberModification
-from faxplus.models.payload_outbox import PayloadOutbox
-from faxplus.models.payload_outbox_modification import PayloadOutboxModification
 from faxplus.rest import ApiException
 
 app = Flask(__name__)
@@ -88,6 +85,7 @@ def check_access_token(f):
         except Exception as ex:
             print(traceback.format_exc())
             raise ex
+
     return wrapper
 
 
@@ -151,8 +149,9 @@ def accounts_requests():
             account = client.get_user(user_id)
             result = account.to_dict()
     elif method == 'put':
-        payload = Account(name=request.form['name'], lastname=request.form['lastname'])
-        client.update_user(user_id, payload)
+        payload = PayloadAccountModification(name=request.form['name'],
+                                             lastname=request.form['lastname'])
+        client.update_user(payload)
         result = {'result': 'Account updated successfully'}
     resp = Response(json.dumps(result))
     resp.headers['content-type'] = 'application/json'
@@ -193,7 +192,7 @@ def numbers_requests():
             numbers = client.list_numbers()
             result = numbers.to_dict()
     elif method == 'delete':
-        client.revoke_number(request.args['resource_id'])
+        client.revoke_number(number=request.args['resource_id'], user_id=request.form['memberid'])
         result = {'result': 'number revoked successfully'}
     elif method == 'put':
         payload = PayloadNumberModification(assigned_to=request.form['memberid'])
@@ -275,16 +274,10 @@ def outbox_requests():
             result = res.to_dict()
     elif method == 'post':
         fax = PayloadOutbox(
-            [request.form['to']],
-            request.form['from'],
-            [request.form['fax-file']],
-            {
-                "retry": {
-                    "delay": 0,
-                    "count": 0
-                },
-                "enhancement": True,
-            },
+            to=[request.form['to']],
+            from_number=request.form['from'],
+            files=[request.form['fax-file']],
+            options=PayloadOutboxOptions(retry=RetryOptions(count=0, delay=0), enhancement=True)
         )
         client.send_fax(fax)
         result = {'result': 'outbox fax created successfully'}
